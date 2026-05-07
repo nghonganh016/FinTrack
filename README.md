@@ -279,16 +279,15 @@ cd frontend
 # Install dependencies
 npm install
 
-# Create .env file
-cat > .env << EOF
-VITE_API_URL=http://localhost:3001/api
-EOF
+# (Optional) Create .env only if you need to override the API URL
+# By default, the frontend auto-connects to the same host as the browser
+# cat > .env << EOF
+# VITE_API_URL=http://localhost:3001/api
+# EOF
 
-# Start development server (localhost only)
-npm run dev
-
-# Start development server (accessible on local network)
-npm run dev -- --host
+# Start development server
+npm run dev                  # localhost only
+npm run dev -- --host        # accessible on local network (recommended)
 ```
 
 The app will be available at:
