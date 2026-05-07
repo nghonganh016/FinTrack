@@ -291,6 +291,12 @@ BEGIN
     SELECT Balance INTO v_Balance
     FROM   BankAccounts
     WHERE  AccountID = p_AccountID;
+
+    -- Credit Card accounts are allowed to go negative (debt), so skip the check
+    IF v_AccType = 'Credit Card' THEN
+        RETURN 0;
+    END IF;
+
     RETURN IF(v_Balance - p_Amount < 0, 1, 0);
 END$$
 
