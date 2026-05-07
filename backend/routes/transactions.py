@@ -1,6 +1,5 @@
 """
 routes/transactions.py — /api/transactions
-Mirrors: page_transactions.py + routes/transactions.js
 """
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
@@ -15,7 +14,7 @@ class TransactionCreate(BaseModel):
     amount: float = Field(ge=0, le=999_999_999_999)
     date: str           # YYYY-MM-DD
     accountID: int
-    description: Optional[str] = Field(default=None, max_length=255, pattern=r"^[a-zA-Z0-9_ ]+$")
+    description: Optional[str] = Field(default=None, max_length=255, pattern=r"^[a-zA-Z0-9_ -]+$")
     categoryID: Optional[int] = None
 
 def _call_sp(conn, sp_name: str, in_params: list) -> str:
