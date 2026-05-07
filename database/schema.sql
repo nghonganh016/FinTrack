@@ -288,7 +288,8 @@ DETERMINISTIC
 READS SQL DATA
 BEGIN
     DECLARE v_Balance DECIMAL(15,2) DEFAULT 0;
-    SELECT Balance INTO v_Balance
+    DECLARE v_AccType VARCHAR(50);
+    SELECT Balance, AccountType INTO v_Balance, v_AccType
     FROM   BankAccounts
     WHERE  AccountID = p_AccountID;
 
