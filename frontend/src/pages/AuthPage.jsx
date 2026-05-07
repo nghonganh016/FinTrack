@@ -125,9 +125,22 @@ export default function AuthPage() {
   const handleRegister = async (e) => {
     e.preventDefault()
     setError('')
-    if (!regName || !regEmail || !regPw || !regPw2) return setError('Full name, email and password are required.')
-    if (regPw.length < 6) return setError('Password must be at least 6 characters.')
-    if (regPw !== regPw2) return setError('Passwords do not match.')
+
+    if (!regName.trim() || !regEmail || !regPw || !regPw2)
+      return setError('Full name, email and password are required.')
+    if (regName.trim().length < 3)
+      return setError('Full name must be at least 3 characters.')
+    if (regName.trim().length > 30)
+      return setError('Full name must be at most 30 characters.')
+    if (regPhone && !/^0\d{9,10}$/.test(regPhone))
+      return setError('Phone number must start with 0 and have 10–11 digits.')
+    if (regPw.length < 6)
+      return setError('Password must be at least 6 characters.')
+    if (regPw.length > 128)
+      return setError('Password is too long (max 128 characters).')
+    if (regPw !== regPw2)
+      return setError('Passwords do not match.')
+
     setLoading(true)
     try {
       await register(regName, regEmail, regPw, regPhone)
@@ -135,10 +148,19 @@ export default function AuthPage() {
       setTimeout(() => { setTab('login'); setSuccess(''); setLoginEmail(regEmail) }, 1500)
     } catch (err) {
       const detail = err.response?.data?.detail || err.response?.data?.error || ''
-      if (detail.toLowerCase().includes('already')) {
-        setError('This email is already registered. Please sign in instead.')
+      if (Array.isArray(detail)) {
+        const first = detail[0]
+        const field = first?.loc?.[1]
+        const msg   = first?.msg?.replace('Value error, ', '') ?? 'Invalid input.'
+        setError(`${field ? field + ': ' : ''}${msg}`)
+      } else if (typeof detail === 'string') {
+        if (detail.toLowerCase().includes('already')) {
+          setError('This email is already registered. Please sign in instead.')
+        } else {
+          setError(detail || 'Registration failed. Please try again.')
+        }
       } else {
-        setError(detail || 'Registration failed. Please try again.')
+        setError('Registration failed. Please try again.')
       }
     } finally {
       setLoading(false)

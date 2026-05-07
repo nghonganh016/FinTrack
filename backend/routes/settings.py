@@ -2,7 +2,7 @@
 routes/settings.py — /api/settings
 """
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from db import DBContext, get_connection
 from middleware.auth import verify_token
@@ -10,8 +10,8 @@ from middleware.auth import verify_token
 router = APIRouter()
 
 class ProfileUpdate(BaseModel):
-    userName: str
-    phoneNumber: Optional[str] = None
+    userName: str = Field(min_length=3, max_length=100, pattern=r"^[a-zA-Z0-9_ ]+$")
+    phoneNumber: Optional[str] = Field(default=None, pattern=r"^0\d{9,10}$")
 
 class DeleteAccount(BaseModel):
     email: EmailStr

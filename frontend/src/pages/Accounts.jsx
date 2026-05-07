@@ -28,8 +28,17 @@ function AddAccountModal({ onClose, onDone }) {
   const submit = async (e) => {
     e.preventDefault()
     setError('')
-    if (!name.trim()) return setError('Account name required.')
+    if (!name.trim())
+      return setError('Account name is required.')
+    if (name.trim().length < 2)
+      return setError('Account name must be at least 2 characters.')
+    if (name.trim().length > 100)
+      return setError('Account name must be at most 100 characters.')
+    if (!/^[\p{L}\p{N} _]+$/u.test(name.trim()))
+      return setError('Account name may only contain letters, numbers, spaces, and underscores.')
     const bal = parseFloat(balance)
+    if (isNaN(bal) || bal < 0)
+      return setError('Balance must be a valid non-negative number.')
     if (isNaN(bal)) return setError('Invalid balance.')
     setLoading(true)
     try {

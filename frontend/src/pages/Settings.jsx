@@ -48,7 +48,16 @@ export default function Settings() {
     e.preventDefault();
     setProfErr("");
     setProfMsg("");
-    if (!name.trim()) return setProfErr("Full name is required.");
+    if (!name.trim())
+      return setProfErr('Full name is required.')
+    if (name.trim().length < 3)
+      return setProfErr('Full name must be at least 3 characters.')
+    if (name.trim().length > 100)
+      return setProfErr('Full name must be at most 100 characters.')
+    if (!/^[\p{L}\p{N} _]+$/u.test(name.trim()))
+      return setProfErr('Full name may only contain letters, numbers, spaces, and underscores.')
+    if (phone && !/^0\d{9,10}$/.test(phone))
+      return setProfErr('Phone number must start with 0 and have 10–11 digits.');
     setProfLoad(true);
     try {
       await api.patch("/settings/profile", {

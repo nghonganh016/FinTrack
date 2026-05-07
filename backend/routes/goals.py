@@ -3,7 +3,7 @@ routes/goals.py — /api/goals
 Mirrors: page_goals.py + routes/goals.js
 """
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from db import DBContext
 from middleware.auth import verify_token
@@ -11,9 +11,9 @@ from middleware.auth import verify_token
 router = APIRouter()
 
 class GoalCreate(BaseModel):
-    goalName: str
-    targetAmount: float
-    savedAmount: float = 0.0
+    goalName: str = Field(min_length=2, max_length=100, pattern=r"^[a-zA-Z0-9_ ]+$")
+    targetAmount: float = Field(ge=0, le=999_999_999_999)
+    savedAmount: float = Field(default=0.0, ge=0)
     icon: str = "🎯"
     targetDate: Optional[str] = None  # YYYY-MM-DD
 

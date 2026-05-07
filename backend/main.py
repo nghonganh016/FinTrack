@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
 from contextlib import asynccontextmanager
@@ -25,8 +27,6 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "http://192.168.64.1:5173",
-    "http://192.168.1.237:5173",
     f"http://{os.getenv('LOCAL_IP', '')}:5173",
 ]
 
@@ -51,3 +51,13 @@ app.include_router(settings.router,     prefix="/api/settings",     tags=["Setti
 async def health():
     from datetime import datetime
     return {"status": "ok", "time": datetime.utcnow().isoformat(), "env": os.getenv("NODE_ENV", "development")}
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    first = exc.errors()[0]
+    field = first["loc"][-1] if first.get("loc") else "input"
+    msg   = first["msg"].replace("Value error, ", "")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": f"{field}: {msg}"}
+    )

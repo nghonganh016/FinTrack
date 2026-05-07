@@ -3,7 +3,7 @@ routes/accounts.py — /api/accounts
 Mirrors: page_accounts.py + routes/accounts.js
 """
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from db import DBContext
 from middleware.auth import verify_token
@@ -13,11 +13,11 @@ router = APIRouter()
 ACCOUNT_TYPES = ["Cash", "Bank Account", "Credit Card", "Investment", "E-Wallet", "Other"]
 
 class AccountCreate(BaseModel):
-    accountName: str
+    accountName: str = Field(min_length=2, max_length=100, pattern=r"^[a-zA-Z0-9_ ]+$")
     accountType: str
     bankName: Optional[str] = None
     provider: Optional[str] = None
-    balance: float = 0.0
+    balance: float = Field(default=0.00, ge=0)
 
 @router.get("/")
 def get_accounts(user=Depends(verify_token)):

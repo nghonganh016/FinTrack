@@ -84,18 +84,18 @@ INSERT INTO BankAccounts (UserID, AccountName, AccountType, BankName, Provider, 
 -- ============================================================
 INSERT INTO Income (UserID, AccountID, Amount, IncomeDate, Description) VALUES
     -- Alice
-    (1, 1, 18000000.00, '2025-12-25', 'Monthly salary — December'),
-    (1, 1, 18000000.00, '2026-01-25', 'Monthly salary — January'),
-    (1, 1, 18000000.00, '2026-02-25', 'Monthly salary — February'),
-    (1, 1, 18000000.00, '2026-03-25', 'Monthly salary — March'),
+    (1, 1, 18000000.00, '2025-12-25', 'Monthly salary - December'),
+    (1, 1, 18000000.00, '2026-01-25', 'Monthly salary - January'),
+    (1, 1, 18000000.00, '2026-02-25', 'Monthly salary - February'),
+    (1, 1, 18000000.00, '2026-03-25', 'Monthly salary - March'),
     (1, 2,  5000000.00, '2026-02-10', 'Freelance web design project'),
     (1, 3,  1500000.00, '2026-03-05', 'Online tutoring payment'),
-    (1, 1, 18000000.00, '2026-04-25', 'Monthly salary — April'),
+    (1, 1, 18000000.00, '2026-04-25', 'Monthly salary - April'),
     (1, 4,    800000.00, '2026-04-12', 'Cash gift from family'),
     -- Bob
-    (2, 6, 25000000.00, '2026-02-28', 'Monthly salary — February'),
-    (2, 6, 25000000.00, '2026-03-31', 'Monthly salary — March'),
-    (2, 6, 25000000.00, '2026-04-30', 'Monthly salary — April'),
+    (2, 6, 25000000.00, '2026-02-28', 'Monthly salary - February'),
+    (2, 6, 25000000.00, '2026-03-31', 'Monthly salary - March'),
+    (2, 6, 25000000.00, '2026-04-30', 'Monthly salary - April'),
     (2, 8,  3000000.00, '2026-03-15', 'Stock dividend payment'),
     (2, 7,    500000.00, '2026-04-02', 'Cashback promotion reward');
 

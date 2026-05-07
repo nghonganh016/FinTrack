@@ -4,17 +4,17 @@ routes/auth.py — /api/auth (register + login)
 import os, bcrypt, jwt
 from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from db import DBContext
 from limiter import limiter
 
 router = APIRouter()
 
 class RegisterRequest(BaseModel):
-    username: str
+    username: str = Field(min_length=3, max_length=30, pattern=r"^[a-zA-Z0-9_ ]+$")
     email: EmailStr
-    password: str
-    phone: str | None = None
+    password: str = Field(min_length=6, max_length=128)
+    phone: str | None = Field(default=None, pattern=r"^0\d{9,10}$")
 
 class LoginRequest(BaseModel):
     email: EmailStr
