@@ -215,20 +215,81 @@ fintrack/
 
 ### 1. Database Setup
 
+#### Prerequisites — Install MySQL
+
+Download and install **MySQL Community Server** from:
+**https://dev.mysql.com/downloads/mysql/**
+
+Select your operating system (Windows / macOS / Linux) and follow the installer. During setup you will be asked to set a **root password** — save it somewhere safe.
+
+> **Recommended:** Also install **MySQL Workbench** (included in the MySQL Installer bundle on Windows) if you prefer a GUI over the command line.
+
+---
+
+#### Add MySQL to PATH (Windows only)
+
+If you are on Windows and the `mysql` command is not recognized in your terminal, you need to add MySQL to your system PATH first:
+
+1. Press **Windows + S**, search for **"environment variables"**, click **"Edit the system environment variables"**
+2. In the System Properties window, click **"Environment Variables..."**
+3. Under **"System variables"**, find **Path** → double-click it
+4. Click **"New"** and paste your MySQL bin path, e.g.:
+```
+   C:\Program Files\MySQL\MySQL Server 8.0\bin
+```
+5. Click **OK → OK → OK** to close all windows
+6. Open a **new** Command Prompt window and verify:
 ```bash
-# Import the schema (creates database + all objects)
+   mysql --version
+```
+
+> **Alternative (no PATH setup needed):** Open MySQL Workbench → connect as root → go to **File > Run SQL Script** → select `schema.sql`, then repeat for `sample_data.sql`.
+
+---
+
+#### Import the Schema
+
+Open a terminal (macOS/Linux) or Command Prompt (Windows) and `cd` into your project root folder first:
+
+```bash
+cd path/to/fintrack
+```
+
+Then run:
+
+```bash
+# Creates the PersonalFinance database and all tables, views, triggers, procedures
 mysql -u root -p < database/schema.sql
 
-# (Optional) Load demo data
+# (Optional) Load demo data for testing — 2 sample accounts included
 mysql -u root -p PersonalFinance < database/sample_data.sql
 ```
 
-Create a MySQL user for the app:
+You will be prompted to enter your root password after each command.
+
+---
+
+#### Create a MySQL User for the App
+
+After importing, open a MySQL session:
+
+```bash
+mysql -u root -p
+```
+
+Then run:
 
 ```sql
 CREATE USER 'finance_app'@'localhost' IDENTIFIED BY 'your_password';
 GRANT ALL PRIVILEGES ON PersonalFinance.* TO 'finance_app'@'localhost';
 FLUSH PRIVILEGES;
+```
+
+Replace `your_password` with a strong password of your choice, then update your `backend/.env` file accordingly:
+
+```env
+DB_USER=finance_app
+DB_PASS=your_password
 ```
 
 ---
