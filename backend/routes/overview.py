@@ -88,12 +88,55 @@ def daily(year: int = None, month: int = None, accountID: int = None, user=Depen
     return [{"day": d, "income": inc_map.get(d,0), "expense": exp_map.get(d,0)} for d in range(1, days+1)]
 
 @router.get("/expense-breakdown")
-def expense_breakdown(user=Depends(verify_token)):
+def expense_breakdown(
+    period: str = Query("all", regex="^(daily|monthly|yearly|all)$"),
+    user=Depends(verify_token)
+):
+    """
+    Return expense breakdown by category, filtered by period:
+      - daily:   today only
+      - monthly: current calendar month
+      - yearly:  current calendar year
+      - all:     all-time (default)
+    """
+    uid   = user["userID"]
+    today = _date.today()
+
+    if period == "daily":
+        date_filter = "AND DATE(ExpenseDate) = %s"
+        params = (uid, today.isoformat())
+    elif period == "monthly":
+        date_filter = "AND YEAR(ExpenseDate) = %s AND MONTH(ExpenseDate) = %s"
+        params = (uid, today.year, today.month)
+    elif period == "yearly":
+        date_filter = "AND YEAR(ExpenseDate) = %s"
+        params = (uid, today.year)
+    else:  # all-time
+        date_filter = ""
+        params = (uid,)
+
     with DBContext() as db:
-        db.execute("SELECT CategoryName, CAST(TotalSpent AS DOUBLE) AS totalSpent FROM CategorySpendingSummary WHERE UserID=%s ORDER BY TotalSpent DESC", (user["userID"],))
+        db.execute(
+            f"""SELECT c.CategoryName,
+                       CAST(SUM(e.Amount) AS DOUBLE) AS totalSpent
+                FROM Expenses e
+                JOIN ExpenseCategories c ON e.CategoryID = c.CategoryID
+                WHERE e.UserID = %s {date_filter}
+                GROUP BY c.CategoryName
+                ORDER BY totalSpent DESC""",
+            params
+        )
         rows = db.fetchall()
+
     total = sum(r["totalSpent"] for r in rows)
-    return {"total": total, "categories": [{**r, "pct": r["totalSpent"]/total*100 if total > 0 else 0} for r in rows]}
+    return {
+        "total": total,
+        "period": period,
+        "categories": [
+            {**r, "pct": r["totalSpent"] / total * 100 if total > 0 else 0}
+            for r in rows
+        ]
+    }
 
 @router.get("/export")
 def export(user=Depends(verify_token)):

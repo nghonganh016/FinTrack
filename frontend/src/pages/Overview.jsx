@@ -36,6 +36,14 @@ const PIE_COLORS = [
   "#7C3AED",
 ];
 
+// Period options for the Expense Breakdown pie chart
+const BREAKDOWN_PERIODS = [
+  { label: "Today",   value: "daily"   },
+  { label: "Month",   value: "monthly" },
+  { label: "Year",    value: "yearly"  },
+  { label: "All Time", value: "all"    },
+];
+
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
   return (
@@ -109,11 +117,14 @@ export default function Overview() {
   const [summary, setSummary] = useState(null);
   const [chartData, setChartData] = useState([]);
   const [pieData, setPieData] = useState([]);
+  const [pieTotal, setPieTotal] = useState(0);
   const [accounts, setAccounts] = useState([]);
   const [period, setPeriod] = useState("Monthly");
   const [selAcc, setSelAcc] = useState("");
   const [activePie, setActivePie] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [breakdownPeriod, setBreakdownPeriod] = useState("all");
+  const [pieLoading, setPieLoading] = useState(false);
 
   useEffect(() => {
     loadSummary();
@@ -123,7 +134,7 @@ export default function Overview() {
   }, [period, selAcc]);
   useEffect(() => {
     loadPie();
-  }, []);
+  }, [breakdownPeriod]);
 
   const loadSummary = async () => {
     try {
@@ -172,15 +183,20 @@ export default function Overview() {
   };
 
   const loadPie = async () => {
+    setPieLoading(true);
     try {
-      const r = await api.get("/overview/expense-breakdown");
+      const r = await api.get("/overview/expense-breakdown", {
+        params: { period: breakdownPeriod },
+      });
       setPieData(
         r.data.categories.map((c) => ({
           name: c.categoryName || c.CategoryName,
           value: c.totalSpent,
         })),
       );
+      setPieTotal(r.data.total || 0);
     } catch {}
+    setPieLoading(false);
   };
 
   const handleExport = async () => {
@@ -204,7 +220,7 @@ export default function Overview() {
         r.date,
         r.Description || r.description || "",
         r.category,
-        r.amount, // lowercase — đúng với backend trả về
+        r.amount,
       ]);
 
       // Sheet 2: Monthly Summary
@@ -229,7 +245,6 @@ export default function Overview() {
         r.pct ? r.pct.toFixed(1) : "0.0",
       ]);
 
-      // Gộp thành 1 CSV với tiêu đề phân tách từng section
       const buildSection = (title, headers, rows) => {
         const lines = [`=== ${title} ===`, headers.join(",")];
         rows.forEach((row) =>
@@ -260,17 +275,18 @@ export default function Overview() {
 
   if (loading) return <Spinner />;
 
+  // Label for the empty-state message
+  const breakdownLabel = BREAKDOWN_PERIODS.find(
+    (p) => p.value === breakdownPeriod
+  )?.label || "";
+
   return (
     <div className="p-7 space-y-6">
       <PageHeader
         title="Dashboard"
         subtitle="Overview of your financial health"
         action={
-          <SecondaryBtn
-            onClick={handleExport}
-          >
-            Export CSV
-          </SecondaryBtn>
+          <SecondaryBtn onClick={handleExport}>Export CSV</SecondaryBtn>
         }
       />
 
@@ -378,14 +394,48 @@ export default function Overview() {
         </div>
       </Card>
 
-      {/* Pie chart */}
+      {/* Pie chart — Expense Breakdown */}
       <Card>
-        <h3 className="px-5 pt-5 text-base font-bold text-gray-800">
-          Expense Breakdown
-        </h3>
-        {pieData.length === 0 ? (
+        {/* Header row with period toggle */}
+        <div className="flex flex-wrap items-center justify-between px-5 pt-5 pb-1 gap-3">
+          <div>
+            <h3 className="text-base font-bold text-gray-800">
+              Expense Breakdown
+            </h3>
+            {pieTotal > 0 && (
+              <p className="text-xs text-gray-400 mt-0.5">
+                Total: {fmtVND(pieTotal)}
+              </p>
+            )}
+          </div>
+          {/* Breakdown period toggle */}
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
+            {BREAKDOWN_PERIODS.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  setBreakdownPeriod(opt.value);
+                  setActivePie(0);
+                }}
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                  breakdownPeriod === opt.value
+                    ? "bg-[#5E548E] text-white shadow-sm"
+                    : "text-gray-600 hover:text-gray-800"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {pieLoading ? (
+          <div className="py-12 flex items-center justify-center">
+            <div className="w-6 h-6 border-4 border-[#6B52C8]/20 border-t-[#6B52C8] rounded-full animate-spin" />
+          </div>
+        ) : pieData.length === 0 ? (
           <p className="text-center text-gray-400 py-12 text-sm">
-            No expense data yet.
+            No expense data for {breakdownLabel.toLowerCase()}.
           </p>
         ) : (
           <div className="pb-4">
