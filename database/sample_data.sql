@@ -99,6 +99,13 @@ INSERT INTO Income (UserID, AccountID, Amount, IncomeDate, Description) VALUES
     (2, 8,  3000000.00, '2026-03-15', 'Stock dividend payment'),
     (2, 7,    500000.00, '2026-04-02', 'Cashback promotion reward');
 
+    -- Income in May 2026
+    (1, 1, 18000000.00, '2026-05-01', 'Monthly salary - May'),
+    (1, 2,  2000000.00, '2026-05-07', 'Freelance project payment'),
+    (1, 3,    500000.00, '2026-05-10', 'Cashback reward MoMo'),
+    (2, 6, 25000000.00, '2026-05-01', 'Monthly salary - May'),
+    (2, 8,  1500000.00, '2026-05-09', 'Investment interest');
+
 
 -- ============================================================
 -- 5. EXPENSES (10 records for Alice, 8 for Bob)
@@ -135,6 +142,25 @@ INSERT INTO Expenses (UserID, CategoryID, AccountID, Amount, ExpenseDate, Descri
     (2, 7, 6, 800000.00,  '2026-03-20', 'Online course subscription'),
     -- Entertainment (CategoryID 5)
     (2, 5, 7, 250000.00,  '2026-04-14', 'Netflix monthly + Spotify');
+
+    -- Alice - May
+    (1, 1, 3,   95000.00, '2026-05-01', 'Breakfast and coffee'),
+    (1, 2, 3,   45000.00, '2026-05-02', 'Grab bike to work'),
+    (1, 1, 4,  150000.00, '2026-05-03', 'Lunch with team'),
+    (1, 4, 1,  350000.00, '2026-05-04', 'Internet monthly bill'),
+    (1, 5, 3,   90000.00, '2026-05-04', 'Spotify subscription'),
+    (1, 3, 1,  450000.00, '2026-05-05', 'Clothing at H and M'),
+    (1, 1, 3,   75000.00, '2026-05-06', 'Grocery shopping'),
+    (1, 2, 4,   25000.00, '2026-05-07', 'Parking fee downtown'),
+    (1, 6, 1,  200000.00, '2026-05-08', 'Pharmacy and vitamins'),
+    -- Bob - May
+    (2, 1, 6,  120000.00, '2026-05-01', 'Supermarket groceries'),
+    (2, 2, 7,   55000.00, '2026-05-02', 'Grab Express delivery'),
+    (2, 4, 6,  500000.00, '2026-05-03', 'Electricity and water'),
+    (2, 5, 7,  150000.00, '2026-05-04', 'Gaming subscription'),
+    (2, 7, 6,  300000.00, '2026-05-06', 'Online course payment'),
+    (2, 1, 6,   85000.00, '2026-05-07', 'Coffee and snacks'),
+    (2, 6, 6,  180000.00, '2026-05-08', 'Clinic visit');
 
 
 -- ============================================================

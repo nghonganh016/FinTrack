@@ -32,34 +32,39 @@ def _call_sp(conn, sp_name: str, in_params: list) -> str:
 def list_transactions(
     search: str = Query(""),
     type: str = Query("All"),
+    accountID: int = Query(None),    
     limit: int = Query(100, le=500),
     offset: int = Query(0),
     user=Depends(verify_token)
 ):
     uid = user["userID"]
     with DBContext() as db:
+        acc_filter = "AND e.AccountID=%s" if accountID else ""
+        params_exp = (uid, accountID) if accountID else (uid,)
         db.execute(
-            """SELECT e.ExpenseID AS id, e.ExpenseDate AS txdate, e.Description AS descr,
+            f"""SELECT e.ExpenseID AS id, e.ExpenseDate AS txdate, e.Description AS descr,
                       c.CategoryName AS category, e.CategoryID, b.AccountName,
                       e.AccountID, 'completed' AS status,
                       CAST(-e.Amount AS DOUBLE) AS amount, 'Expense' AS type
                FROM Expenses e
                JOIN ExpenseCategories c ON e.CategoryID=c.CategoryID
                LEFT JOIN BankAccounts b ON e.AccountID=b.AccountID
-               WHERE e.UserID=%s""",
-            (uid,)
+               WHERE e.UserID=%s {acc_filter}""",
+            params_exp
         )
         expenses = db.fetchall()
 
+        acc_filter_i = "AND i.AccountID=%s" if accountID else ""
+        params_inc = (uid, accountID) if accountID else (uid,)
         db.execute(
-            """SELECT i.IncomeID AS id, i.IncomeDate AS txdate, i.Description AS descr,
+            f"""SELECT i.IncomeID AS id, i.IncomeDate AS txdate, i.Description AS descr,
                       'Income' AS category, NULL AS CategoryID, b.AccountName,
                       i.AccountID, 'completed' AS status,
                       CAST(i.Amount AS DOUBLE) AS amount, 'Income' AS type
                FROM Income i
                LEFT JOIN BankAccounts b ON i.AccountID=b.AccountID
-               WHERE i.UserID=%s""",
-            (uid,)
+               WHERE i.UserID=%s {acc_filter_i}""",
+            params_inc
         )
         incomes = db.fetchall()
 
