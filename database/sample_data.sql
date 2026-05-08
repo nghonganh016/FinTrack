@@ -97,7 +97,7 @@ INSERT INTO Income (UserID, AccountID, Amount, IncomeDate, Description) VALUES
     (2, 6, 25000000.00, '2026-03-31', 'Monthly salary - March'),
     (2, 6, 25000000.00, '2026-04-30', 'Monthly salary - April'),
     (2, 8,  3000000.00, '2026-03-15', 'Stock dividend payment'),
-    (2, 7,    500000.00, '2026-04-02', 'Cashback promotion reward');
+    (2, 7,    500000.00, '2026-04-02', 'Cashback promotion reward'),
 
     -- Income in May 2026
     (1, 1, 18000000.00, '2026-05-01', 'Monthly salary - May'),
@@ -141,7 +141,7 @@ INSERT INTO Expenses (UserID, CategoryID, AccountID, Amount, ExpenseDate, Descri
     -- Education (CategoryID 7)
     (2, 7, 6, 800000.00,  '2026-03-20', 'Online course subscription'),
     -- Entertainment (CategoryID 5)
-    (2, 5, 7, 250000.00,  '2026-04-14', 'Netflix monthly + Spotify');
+    (2, 5, 7, 250000.00,  '2026-04-14', 'Netflix monthly + Spotify'),
 
     -- Alice - May
     (1, 1, 3,   95000.00, '2026-05-01', 'Breakfast and coffee'),
