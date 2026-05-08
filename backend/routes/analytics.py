@@ -29,7 +29,16 @@ def get_trend(months: int = Query(12, ge=1, le=36), user=Depends(verify_token)):
         )
         exp_rows = db.fetchall()
 
-    all_months = sorted(set([r["ym"] for r in inc_rows] + [r["ym"] for r in exp_rows]))[-months:]
+    # Generate N months ending at current month
+    from datetime import date
+    from dateutil.relativedelta import relativedelta   # pip install python-dateutil
+
+    today = date.today()
+    all_months = []
+    for i in range(months - 1, -1, -1):
+        d = today - relativedelta(months=i)
+        all_months.append(f"{d.year}-{str(d.month).zfill(2)}")
+
     inc_map = {r["ym"]: r["totalIncome"] for r in inc_rows}
     exp_map = {r["ym"]: r["totalExpense"] for r in exp_rows}
 
@@ -44,7 +53,7 @@ def get_trend(months: int = Query(12, ge=1, le=36), user=Depends(verify_token)):
         "avgIncome":  avg([d["income"]  for d in data]),
         "avgExpense": avg([d["expense"] for d in data]),
         "avgSavings": avg([d["savings"] for d in data]),
-        "months": len(data),
+        "months": len(data),   # bây giờ luôn = months được chọn
     }
     return {"data": data, "summary": summary}
 
