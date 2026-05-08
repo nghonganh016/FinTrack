@@ -79,7 +79,7 @@ INSERT INTO BankAccounts (UserID, AccountName, AccountType, BankName, Provider, 
 
 
 -- ============================================================
--- 4. INCOME (8 records for Alice, 5 for Bob)
+-- 4. INCOME (11 records for Alice, 7 for Bob)
 --    Dates spread across the last 6 months
 -- ============================================================
 INSERT INTO Income (UserID, AccountID, Amount, IncomeDate, Description) VALUES
@@ -108,7 +108,7 @@ INSERT INTO Income (UserID, AccountID, Amount, IncomeDate, Description) VALUES
 
 
 -- ============================================================
--- 5. EXPENSES (10 records for Alice, 8 for Bob)
+-- 5. EXPENSES (19 records for Alice, 15 for Bob)
 -- ============================================================
 INSERT INTO Expenses (UserID, CategoryID, AccountID, Amount, ExpenseDate, Description) VALUES
     -- Alice
@@ -149,7 +149,7 @@ INSERT INTO Expenses (UserID, CategoryID, AccountID, Amount, ExpenseDate, Descri
     (1, 1, 4,  150000.00, '2026-05-03', 'Lunch with team'),
     (1, 4, 1,  350000.00, '2026-05-04', 'Internet monthly bill'),
     (1, 5, 3,   90000.00, '2026-05-04', 'Spotify subscription'),
-    (1, 3, 1,  450000.00, '2026-05-05', 'Clothing at H and M'),
+    (1, 3, 1,  450000.00, '2026-05-05', 'Clothing at Uniqlo'),
     (1, 1, 3,   75000.00, '2026-05-06', 'Grocery shopping'),
     (1, 2, 4,   25000.00, '2026-05-07', 'Parking fee downtown'),
     (1, 6, 1,  200000.00, '2026-05-08', 'Pharmacy and vitamins'),
